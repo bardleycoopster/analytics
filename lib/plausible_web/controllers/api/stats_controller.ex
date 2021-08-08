@@ -3,7 +3,7 @@ defmodule PlausibleWeb.Api.StatsController do
   use Plausible.Repo
   use Plug.ErrorHandler
   alias Plausible.Stats
-  alias Plausible.Stats.{Query, Filters}
+  alias Plausible.Stats.{Query, Filters, Clickhouse}
 
   def main_graph(conn, params) do
     site = conn.assigns[:site]
@@ -424,7 +424,7 @@ defmodule PlausibleWeb.Api.StatsController do
     query = Query.from(site.timezone, params)
     country_name = if params["country_name"], do: params["country_name"]
 
-    json(conn, Stats.subdivisions1(site, query, country_name))
+    json(conn, Clickhouse.subdivisions1(site, query, country_name))
   end
 
   def subdivisions2(conn, params) do
@@ -435,7 +435,7 @@ defmodule PlausibleWeb.Api.StatsController do
     subdivision1_geoname_id =
       if params["subdivision1_geoname_id"], do: params["subdivision1_geoname_id"]
 
-    json(conn, Stats.subdivisions2(site, query, country_name, subdivision1_geoname_id))
+    json(conn, Clickhouse.subdivisions2(site, query, country_name, subdivision1_geoname_id))
   end
 
   def cities(conn, params) do
@@ -451,7 +451,7 @@ defmodule PlausibleWeb.Api.StatsController do
 
     json(
       conn,
-      Stats.cities(site, query, country_name, subdivision1_geoname_id, subdivision2_geoname_id)
+      Clickhouse.cities(site, query, country_name, subdivision1_geoname_id, subdivision2_geoname_id)
     )
   end
 
