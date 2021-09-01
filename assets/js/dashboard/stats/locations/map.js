@@ -11,6 +11,18 @@ import * as api from '../../api'
 import { navigateToQuery } from '../../query'
 import { withThemeConsumer } from '../../theme-consumer-hoc';
 
+import ListReport from './reports/list'
+
+function Subdivisions({query, site}) {
+  function fetchData() {
+    return api.get(`/api/stats/${encodeURIComponent(site.domain)}/subdivisions1`, query, {country_name: query.filters['country'], limit: 9})
+  }
+
+  return (
+    <ListReport title={'Regions'} fetchData={fetchData} filterKey={'subdivision1'} keyLabel={'Region'} query={query} />
+  )
+}
+
 class CountriesMap extends React.Component {
   constructor(props) {
     super(props)
@@ -146,6 +158,10 @@ class CountriesMap extends React.Component {
   }
 
   render() {
+    if (this.props.query.filters['country']) {
+      return <Subdivisions site={this.props.site} query={this.props.query} />
+    }
+
     return (
       <LazyLoader onVisible={this.onVisible}>
         { this.state.loading && <div className="mx-auto my-32 loading"><div></div></div> }
