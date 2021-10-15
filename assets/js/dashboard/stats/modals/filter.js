@@ -14,7 +14,7 @@ import {apiPath, sitePath} from '../../url'
 export const FILTER_GROUPS = {
   'page': ['page'],
   'source': ['source', 'referrer'],
-  'country': ['country', 'region', 'city'],
+  'location': ['country', 'region', 'city'],
   'screen': ['screen'],
   'browser': ['browser', 'browser_version'],
   'os': ['os', 'os_version'],
@@ -65,8 +65,12 @@ export function formatFilterGroup(filterGroup) {
   if (filterGroup === 'utm') {
     return 'UTM tags'
   }
-    return formattedFilters[filterGroup]
 
+  if (filterGroup === 'location') {
+    return 'Location'
+  }
+
+  return formattedFilters[filterGroup]
 }
 
 export function filterGroupForFilter(filter) {

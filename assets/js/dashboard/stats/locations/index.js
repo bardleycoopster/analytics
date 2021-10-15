@@ -1,14 +1,43 @@
 import React from 'react';
 
-import * as storage from '../../storage'
 import Countries from './countries';
 import CountriesMap from './map'
+import {ListReportContent} from '../reports/list'
 
-const labelFor = {
-	'map': 'Countries Map',
-	'countries': 'Countries',
-	'regions': 'Regions',
-	'cities': 'Cities',
+import * as api from '../../api'
+import {apiPath, sitePath} from '../../url'
+import * as storage from '../../storage'
+
+function Regions({query, site}) {
+  function fetchData() {
+    return api.get(apiPath(site, '/regions'), query, {country_name: query.filters.country, limit: 9})
+  }
+
+  return (
+    <ListReportContent
+      fetchData={fetchData}
+      filter={{region: 'code', region_name: 'name'}}
+      keyLabel="Region"
+      detailsLink={sitePath(site, '/regions')}
+      query={query}
+    />
+  )
+}
+
+function Cities({query, site}) {
+  function fetchData() {
+    return api.get(apiPath(site, '/cities'), query, {limit: 9})
+  }
+
+  return (
+    <ListReportContent
+      fetchData={fetchData}
+      filter={{city: 'code', city_name: 'name'}}
+      keyLabel="City"
+      detailsLink={sitePath(site, '/cities')}
+      query={query}
+    />
+  )
 }
 
 export default class Locations extends React.Component {
@@ -32,6 +61,10 @@ export default class Locations extends React.Component {
     switch(this.state.mode) {
 		case "countries":
       return <Countries site={this.props.site} query={this.props.query} timer={this.props.timer}/>
+		case "regions":
+      return <Regions site={this.props.site} query={this.props.query} timer={this.props.timer}/>
+		case "cities":
+      return <Cities site={this.props.site} query={this.props.query} timer={this.props.timer}/>
     case "map":
     default:
       return <CountriesMap site={this.props.site} query={this.props.query} timer={this.props.timer}/>
@@ -71,13 +104,13 @@ export default class Locations extends React.Component {
         >
           <div className="w-full flex justify-between">
             <h3 className="font-bold dark:text-gray-100">
-              {labelFor[this.state.mode] || 'Locations'}
+              Locations
             </h3>
             <ul className="flex font-medium text-xs text-gray-500 dark:text-gray-400 space-x-2">
               { this.renderPill('Map', 'map') }
               { this.renderPill('Countries', 'countries') }
-              {/* { this.renderPill('Regions', 'regions') } */}
-              {/* { this.renderPill('Cities', 'cities') } */}
+              { this.renderPill('Regions', 'regions') }
+              { this.renderPill('Cities', 'cities') }
             </ul>
           </div>
           { this.renderContent() }

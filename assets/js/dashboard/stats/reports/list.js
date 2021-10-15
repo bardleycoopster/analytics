@@ -7,7 +7,7 @@ import numberFormatter from '../../number-formatter'
 import Bar from '../bar'
 import LazyLoader from '../../lazy-loader'
 
-export default class ListReport extends React.Component {
+export class ListReportContent extends React.Component {
   constructor(props) {
     super(props)
     this.state = {loading: true}
@@ -85,15 +85,23 @@ export default class ListReport extends React.Component {
 
   render() {
     return (
+      <LazyLoader onVisible={this.onVisible} className="flex flex-col flex-grow">
+        { this.state.loading && <div className="mx-auto loading mt-44"><div></div></div> }
+        <FadeIn show={!this.state.loading} className="flex-grow">
+          { this.renderList() }
+        </FadeIn>
+        {this.props.detailsLink && !this.state.loading && <MoreLink url={this.props.detailsLink} list={this.state.list} />}
+      </LazyLoader>
+    )
+  }
+}
+
+export default class ListReport extends React.Component {
+  render() {
+    return (
       <div className="relative p-4 bg-white rounded shadow-xl stats-item flex flex-col dark:bg-gray-825 mt-6 w-full">
-        <LazyLoader onVisible={this.onVisible} className="flex flex-col flex-grow">
-          <h3 className="font-bold dark:text-gray-100">{this.props.title}</h3>
-          { this.state.loading && <div className="mx-auto loading mt-44"><div></div></div> }
-          <FadeIn show={!this.state.loading} className="flex-grow">
-            { this.renderList() }
-          </FadeIn>
-          {this.props.detailsLink && !this.state.loading && <MoreLink url={this.props.detailsLink} list={this.state.list} />}
-        </LazyLoader>
+        <h3 className="font-bold dark:text-gray-100">{this.props.title}</h3>
+        <ListReportContent query={this.props.query} fetchData={this.props.fetchData} filter={this.props.filter} keyLabel={this.props.keyLabel} detailsLink={this.props.detailsLink}  />
       </div>
     )
   }
